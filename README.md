@@ -1,5 +1,6 @@
 # plp-tp1
 
-A parte de tener Hugs instalado para correr las cosas hay que instalar la librería de unit testing que no viene por defecto:
+A parte del intérprete hay que instalar HUnit (librería para unit testing de Haskell):
 
-sudo apt-get install libhugs-hunit-bundled 
+* Si usan Hugs: sudo apt-get install libhugs-hunit-bundled
+* Si usan GHC: sudo apt install libghc-hunit-dev
