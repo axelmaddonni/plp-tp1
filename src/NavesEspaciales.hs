@@ -15,22 +15,39 @@ instance Show NaveEspacial where
   
 padNave nivel acum doPad (Base c) = (if doPad then pad (4*nivel + acum) else "") ++ show c
 padNave nivel acum doPad (Módulo x i d) = (if doPad then pad (4*nivel + acum) else "") ++ show x ++ 
-					  pad 4 ++ padNave (nivel+1) (acum+l) False i ++ "\n" ++
-					  padNave (nivel+1) (acum+l) True d where l = length $ show x
+            pad 4 ++ padNave (nivel+1) (acum+l) False i ++ "\n" ++
+            padNave (nivel+1) (acum+l) True d where l = length $ show x
 
 pad :: Int -> String
 pad i = replicate i ' '
 
 --Ejercicio 1
-foldNave :: undefined
-foldNave = undefined
+foldNave :: (Componente -> a) -> (Componente -> a -> a -> a) -> NaveEspacial -> a
+foldNave f g (Base c) = f c
+foldNave f g (Módulo c n1 n2) = g c (recu n1) (recu n2) 
+          where recu = foldNave f g 
 
 --Ejercicio 2
 capacidad :: NaveEspacial -> Int
-capacidad = undefined
+capacidad = foldNave esContenedor (\x y z-> esContenedor x + y + z)
 
 poderDeAtaque :: NaveEspacial -> Int
-poderDeAtaque = undefined
+poderDeAtaque = foldNave esCañón (\x y z-> esCañón x + y + z)
+
+esContenedor :: Componente -> Int
+esContenedor = esComponenteX Contenedor
+
+esCañón :: Componente -> Int
+esCañón = esComponenteX Cañón
+
+esEscudo :: Componente -> Int
+esEscudo = esComponenteX Escudo
+
+esMotor :: Componente -> Int
+esMotor = esComponenteX Motor
+
+esComponenteX :: Componente -> Componente -> Int
+esComponenteX x y = if x == y then 1 else 0
 
 puedeVolar :: NaveEspacial -> Bool
 puedeVolar = undefined

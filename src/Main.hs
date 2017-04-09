@@ -56,7 +56,10 @@ testsEj2 = test [
   ]
 
 testsEj3 = test [
-  0 ~=? 0 --Cambiar esto por tests verdaderos.
+  0 ~=? poderDeAtaque soloUnMotor,
+  0 ~=? poderDeAtaque puroContenedor,
+  3 ~=? poderDeAtaque tresCañones,
+  1 ~=? poderDeAtaque contenedorYCañon
   ]
 
 testsEj4 = test [
