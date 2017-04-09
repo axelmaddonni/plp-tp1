@@ -24,9 +24,9 @@ pad i = replicate i ' '
 --Ejercicio 1
 
 foldNave :: (Componente->b) -> (Componente->b->b->b) -> NaveEspacial -> b
-foldNave f g nave = case nave of
-	Base x -> f x
-	Módulo x y z -> g x (foldNave f g y) (foldNave f g z)
+foldNave fbase fmodulo nave = case nave of
+	Base c -> fbase c
+	Módulo c n1 n2 -> fmodulo c (foldNave fbase fmodulo n1) (foldNave fbase fmodulo n2)
 
 --Ejercicio 2
 
@@ -56,29 +56,41 @@ mayorCapacidad = foldr1 (\nave res -> if capacidad nave > capacidad res then nav
 --Ejercicio 4
 
 transformar :: (Componente -> Componente) -> NaveEspacial -> NaveEspacial
-transformar = undefined
+transformar trans = foldNave (Base . trans) (\c -> Módulo $trans c)
 
 -- Ejercicio 5
 impactar :: Peligro -> NaveEspacial -> NaveEspacial
-impactar p nave = undefined
+impactar (d, 0, Grande) (Módulo Escudo n1 n2) = if poderDeAtaque n1 > 0 || poderDeAtaque n2 > 0 then Módulo Escudo n1 n2 else Base Contenedor
+impactar (d, 0, Pequeño) (Base Escudo) = Base Escudo
+impactar (d, 0, Pequeño) (Módulo Escudo n1 n2 ) = Módulo Escudo n1 n2 
+impactar (d, 0, t) n = Base Contenedor    
+impactar (d, i, t) (Base c) = Base c 
+impactar (d, i, t) (Módulo c n1 n2) = if d == Babor then Módulo c (impactar (d, i-1, t) n1) n2 else Módulo c n1 $impactar (d, i-1, t) n2 
 
--- Definir la funcion impactar :: Peligro -> NaveEspacial -> NaveEspacial
--- que devuelve la nave resultante luego de enfrentar el peligro correspondiente
--- (segun se detallo en la seccion “Peligros”)
--- Para este ejercicio puede utilizarse recursion explicita. Se debe explicar en un comentario por
--- que el esquema foldNave no es adecuado para esta funcion
+{- No se puede usar foldNave porque para la funcion del caso base requeriría tener noción del Peligro
+ y Altura en la que esta el Componente pero esto es imposible
+ ya que dicha función solo puede tomar un Componente como parametro de entrada (Componente->b) 
+ En realidad lo de arriba no es cierto, ver la implementacion del ejercicio 8.-}
 
 -- Ejercicio 6
 maniobrar :: NaveEspacial -> [Peligro] -> NaveEspacial
-maniobrar = undefined
+maniobrar n = foldl (flip impactar) n
 
 -- Ejercicio 7
 pruebaDeFuego :: [Peligro] -> [NaveEspacial] -> [NaveEspacial]
-pruebaDeFuego = undefined
+pruebaDeFuego peligros naves = filter puedeVolar (map (flip maniobrar peligros) naves)
 
 -- Ejercicio 8
 componentesPorNivel :: NaveEspacial -> Int -> Int
-componentesPorNivel = undefined
+componentesPorNivel = foldNave fBase fModulo
+    where  fBase = \c -> (\i -> if i == 0 then 1 else 0) 
+           fModulo = \c fIzq fDer -> (\i -> if i == 0 then 1 else fIzq (i-1) + fDer (i-1))
 
 dimensiones :: NaveEspacial -> (Int, Int)
-dimensiones = undefined
+dimensiones nave = (altura, maximum (anchos nave altura)) where altura = largo nave
+
+largo :: NaveEspacial -> Int
+largo = foldNave (\comp -> 1) (\comp largo1 largo2 -> (max largo1 largo2) + 1)
+
+anchos :: NaveEspacial -> Int -> [Int]
+anchos nave altura = [componentesPorNivel nave i | i<-[0..altura]]

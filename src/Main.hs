@@ -35,6 +35,14 @@ superProtegido = Módulo Motor protegido protegido
 
 desbalanceado = Módulo Escudo (Base Contenedor) protegido
 
+impactable = Módulo Contenedor (Módulo Escudo (Base Cañón) (Base Motor)) (Base Motor)
+impactado1B = Módulo Contenedor (Base Contenedor) (Base Motor)
+
+transformador :: Componente -> Componente
+transformador Cañón = Escudo
+transformador Motor = Motor
+transformador Escudo = Contenedor
+transformador Contenedor = Cañón 
 
 --Ejecución de los tests
 main :: IO Counts
@@ -69,11 +77,16 @@ testsEj3 = test [
   ]
 
 testsEj4 = test [
-  0 ~=? 0 --Cambiar esto por tests verdaderos.
+  soloUnMotor ~=? transformar transformador soloUnMotor,
+  tresCañones ~=? transformar transformador puroContenedor,
+  Módulo Escudo (Base Contenedor) (Base Motor) ~=? transformar transformador nave2
   ]
 
 testsEj5 = test [
-  0 ~=? 0 --Cambiar esto por tests verdaderos.
+  impactado1B ~=? impactar (Babor, 1, Torpedo) impactable,
+  impactable ~=? impactar (Babor, 1, Grande) impactable,
+  impactable ~=? impactar (Babor, 1, Pequeño) impactable,
+  (Base Contenedor) ~=? impactar (Babor, 0, Pequeño) impactable
   ]
 
 testsEj6 = test [
@@ -81,11 +94,25 @@ testsEj6 = test [
   ]
 
 testsEj7 = test [
-  [nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9]
+  0 ~=? 0
+  --[nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9]
   ]
 
 testsEj8 = test [
-  (4,6) ~=? (dimensiones $ maniobrar nave9 [(Babor,1,Grande),(Babor,2,Torpedo)])
+  1 ~=? componentesPorNivel nave1 0,
+  0 ~=? componentesPorNivel nave1 1,
+  1 ~=? componentesPorNivel nave2 0,
+  2 ~=? componentesPorNivel nave2 1,
+  0 ~=? componentesPorNivel nave2 2,
+  1 ~=? componentesPorNivel nave4 0,
+  2 ~=? componentesPorNivel nave4 1,
+  4 ~=? componentesPorNivel nave4 2,
+  0 ~=? componentesPorNivel nave4 3,
+  (1, 1) ~=? dimensiones nave1,
+  (2, 2) ~=? dimensiones nave2,
+  (3, 4) ~=? dimensiones nave4,
+  (4, 4) ~=? dimensiones nave6,
+  (5, 4) ~=? dimensiones nave8
   ]
 
 
