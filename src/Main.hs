@@ -59,7 +59,8 @@ testsEj3 = test [
   0 ~=? poderDeAtaque soloUnMotor,
   0 ~=? poderDeAtaque puroContenedor,
   3 ~=? poderDeAtaque tresCañones,
-  1 ~=? poderDeAtaque contenedorYCañon
+  1 ~=? poderDeAtaque contenedorYCañon,
+  True ~=? mismoPotencial nave4 nave5
   ]
 
 testsEj4 = test [
