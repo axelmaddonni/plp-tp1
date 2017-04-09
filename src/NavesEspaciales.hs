@@ -3,7 +3,7 @@ module NavesEspaciales (Componente(Contenedor, Motor, Escudo, Cañón), NaveEspa
 data Componente = Contenedor | Motor | Escudo | Cañón deriving (Eq, Show)
 
 data NaveEspacial = Módulo Componente NaveEspacial NaveEspacial | Base Componente deriving Eq
-	
+
 data Dirección = Babor | Estribor deriving Eq
 
 data TipoPeligro = Pequeño | Grande | Torpedo deriving Eq
@@ -25,8 +25,8 @@ pad i = replicate i ' '
 
 foldNave :: (Componente->b) -> (Componente->b->b->b) -> NaveEspacial -> b
 foldNave fbase fmodulo nave = case nave of
-	Base c -> fbase c
-	Módulo c n1 n2 -> fmodulo c (foldNave fbase fmodulo n1) (foldNave fbase fmodulo n2)
+    Base c -> fbase c
+    Módulo c n1 n2 -> fmodulo c (foldNave fbase fmodulo n1) (foldNave fbase fmodulo n2)
 
 --Ejercicio 2
 
