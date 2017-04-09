@@ -78,7 +78,7 @@ maniobrar n = foldl (flip impactar) n
 
 -- Ejercicio 7
 pruebaDeFuego :: [Peligro] -> [NaveEspacial] -> [NaveEspacial]
-pruebaDeFuego peligros naves = filter puedeVolar (map (flip maniobrar peligros) naves)
+pruebaDeFuego peligros naves = [n | n <- naves, puedeVolar $maniobrar n peligros]
 
 -- Ejercicio 8
 componentesPorNivel :: NaveEspacial -> Int -> Int

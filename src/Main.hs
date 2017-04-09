@@ -90,12 +90,12 @@ testsEj5 = test [
   ]
 
 testsEj6 = test [
-  0 ~=? 0 --Cambiar esto por tests verdaderos.
+  impactable ~=? maniobrar impactable [(Babor, 1, Grande)],
+  (Base Contenedor) ~=? maniobrar impactable [(Babor, 1, Grande), (Babor, 0, Pequeño)]
   ]
 
 testsEj7 = test [
-  0 ~=? 0
-  --[nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9]
+  [nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9]
   ]
 
 testsEj8 = test [
