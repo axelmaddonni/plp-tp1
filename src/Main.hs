@@ -52,15 +52,20 @@ allTests = test [
 
 testsEj2 = test [
   0 ~=? capacidad soloUnMotor,
-  3 ~=? capacidad puroContenedor
-  ]
-
-testsEj3 = test [
+  3 ~=? capacidad puroContenedor,
   0 ~=? poderDeAtaque soloUnMotor,
   0 ~=? poderDeAtaque puroContenedor,
   3 ~=? poderDeAtaque tresCañones,
   1 ~=? poderDeAtaque contenedorYCañon,
-  True ~=? mismoPotencial nave4 nave5
+  True ~=? mismoPotencial nave4 nave5,
+  True ~=? puedeVolar soloUnMotor,
+  False ~=? puedeVolar tresCañones,
+  True ~=? puedeVolar superProtegido
+  ]
+
+testsEj3 = test [
+  puroContenedor ~=? mayorCapacidad [soloUnMotor, puroContenedor],
+  nave6 ~=? mayorCapacidad [nave6, nave1]
   ]
 
 testsEj4 = test [

@@ -43,7 +43,7 @@ esComponenteX :: Componente -> Componente -> Int
 esComponenteX x y = if x == y then 1 else 0
 
 puedeVolar :: NaveEspacial -> Bool
-puedeVolar = undefined
+puedeVolar = foldNave (==Motor) (\c rIzq rDer -> rIzq || rDer || c==Motor)
 
 mismoPotencial :: NaveEspacial -> NaveEspacial -> Bool
 mismoPotencial nave1 nave2 =  cantidadComponenteX Cañón nave1 == cantidadComponenteX Cañón nave2 && cantidadComponenteX Escudo nave1 == cantidadComponenteX Escudo nave2 && cantidadComponenteX Motor nave1 == cantidadComponenteX Motor nave2  && cantidadComponenteX Contenedor nave1 == cantidadComponenteX Contenedor nave2
@@ -51,7 +51,7 @@ mismoPotencial nave1 nave2 =  cantidadComponenteX Cañón nave1 == cantidadCompo
 --Ejercicio 3
 
 mayorCapacidad :: [NaveEspacial] -> NaveEspacial
-mayorCapacidad = undefined
+mayorCapacidad = foldr1 (\nave res -> if capacidad nave > capacidad res then nave else res)
 
 --Ejercicio 4
 
