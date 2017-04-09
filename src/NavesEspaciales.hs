@@ -3,7 +3,7 @@ module NavesEspaciales (Componente(Contenedor, Motor, Escudo, Cañón), NaveEspa
 data Componente = Contenedor | Motor | Escudo | Cañón deriving (Eq, Show)
 
 data NaveEspacial = Módulo Componente NaveEspacial NaveEspacial | Base Componente deriving Eq
-
+	
 data Dirección = Babor | Estribor deriving Eq
 
 data TipoPeligro = Pequeño | Grande | Torpedo deriving Eq
@@ -22,29 +22,22 @@ pad :: Int -> String
 pad i = replicate i ' '
 
 --Ejercicio 1
-foldNave :: (Componente -> a) -> (Componente -> a -> a -> a) -> NaveEspacial -> a
-foldNave f g (Base c) = f c
-foldNave f g (Módulo c n1 n2) = g c (recu n1) (recu n2) 
-          where recu = foldNave f g 
+
+foldNave :: (Componente->b) -> (Componente->b->b->b) -> NaveEspacial -> b
+foldNave f g nave = case nave of
+	Base x -> f x
+	Módulo x y z -> g x (foldNave f g y) (foldNave f g z)
 
 --Ejercicio 2
+
 capacidad :: NaveEspacial -> Int
-capacidad = foldNave esContenedor (\x y z-> esContenedor x + y + z)
+capacidad = foldNave (esComponenteX Contenedor) (\x y z -> (esComponenteX Contenedor x)+y+z)
 
 poderDeAtaque :: NaveEspacial -> Int
-poderDeAtaque = foldNave esCañón (\x y z-> esCañón x + y + z)
+poderDeAtaque nave = cantidadComponenteX Cañón nave
 
-esContenedor :: Componente -> Int
-esContenedor = esComponenteX Contenedor
-
-esCañón :: Componente -> Int
-esCañón = esComponenteX Cañón
-
-esEscudo :: Componente -> Int
-esEscudo = esComponenteX Escudo
-
-esMotor :: Componente -> Int
-esMotor = esComponenteX Motor
+cantidadComponenteX :: Componente -> NaveEspacial -> Int
+cantidadComponenteX c = foldNave (esComponenteX c) (\x y z-> (esComponenteX c x) + y + z)
 
 esComponenteX :: Componente -> Componente -> Int
 esComponenteX x y = if x == y then 1 else 0
@@ -53,7 +46,7 @@ puedeVolar :: NaveEspacial -> Bool
 puedeVolar = undefined
 
 mismoPotencial :: NaveEspacial -> NaveEspacial -> Bool
-mismoPotencial = undefined
+mismoPotencial nave1 nave2 =  cantidadComponenteX Cañón nave1 == cantidadComponenteX Cañón nave2 && cantidadComponenteX Escudo nave1 == cantidadComponenteX Escudo nave2 && cantidadComponenteX Motor nave1 == cantidadComponenteX Motor nave2  && cantidadComponenteX Contenedor nave1 == cantidadComponenteX Contenedor nave2
 
 --Ejercicio 3
 
@@ -67,7 +60,13 @@ transformar = undefined
 
 -- Ejercicio 5
 impactar :: Peligro -> NaveEspacial -> NaveEspacial
-impactar = undefined
+impactar p nave = undefined
+
+-- Definir la funcion impactar :: Peligro -> NaveEspacial -> NaveEspacial
+-- que devuelve la nave resultante luego de enfrentar el peligro correspondiente
+-- (segun se detallo en la seccion “Peligros”)
+-- Para este ejercicio puede utilizarse recursion explicita. Se debe explicar en un comentario por
+-- que el esquema foldNave no es adecuado para esta funcion
 
 -- Ejercicio 6
 maniobrar :: NaveEspacial -> [Peligro] -> NaveEspacial
