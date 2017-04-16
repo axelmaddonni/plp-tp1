@@ -3,8 +3,6 @@ import NavesEspaciales
 import Test.HUnit
 import Data.List
 
-
-
 --Naves para pruebas:
 contenedorSolo = Base Contenedor
 nave1 = Base Motor
@@ -17,6 +15,14 @@ nave7 = Módulo Contenedor nave1 nave5
 nave8 = Módulo Contenedor nave1 nave6
 nave9 = Módulo Escudo 
     (Módulo Escudo (Módulo Escudo (Base Escudo) (Base Cañón)) (Módulo Motor (Base Contenedor) (Base Motor))) 
+    (Módulo Escudo (Módulo Contenedor (Base Motor) (Base Contenedor)) (Módulo Escudo (Base Cañón) (Base Escudo)))
+
+nave9semiPartida =  Módulo Escudo 
+    (Módulo Escudo (Base Contenedor) (Módulo Motor (Base Contenedor) (Base Motor))) 
+    (Módulo Escudo (Módulo Contenedor (Base Motor) (Base Contenedor)) (Módulo Escudo (Base Cañón) (Base Escudo)))
+
+nave9Partida =  Módulo Escudo 
+    (Base Contenedor) 
     (Módulo Escudo (Módulo Contenedor (Base Motor) (Base Contenedor)) (Módulo Escudo (Base Cañón) (Base Escudo)))
 
 soloUnMotor = Base Motor
@@ -32,6 +38,8 @@ protegido = Módulo Escudo (Base Contenedor) (Base Cañón)
 protegidoNivel1Estribor = Módulo Contenedor soloUnMotor protegido
 
 superProtegido = Módulo Motor protegido protegido
+superPartido = Módulo Motor (Base Contenedor) protegido
+superDestruido = Módulo Motor (Base Contenedor) (Base Contenedor)
 
 desbalanceado = Módulo Escudo (Base Contenedor) protegido
 
@@ -60,6 +68,9 @@ allTests = test [
 
 testsEj2 = test [
   0 ~=? capacidad soloUnMotor,
+  1 ~=? capacidad nave4,
+  2 ~=? capacidad nave6,
+  3 ~=? capacidad nave8,
   3 ~=? capacidad puroContenedor,
   0 ~=? poderDeAtaque soloUnMotor,
   0 ~=? poderDeAtaque puroContenedor,
@@ -72,8 +83,12 @@ testsEj2 = test [
   ]
 
 testsEj3 = test [
+  nave4 ~=? mayorCapacidad [nave4],
+  nave6 ~=? mayorCapacidad [nave6, nave1],
+  nave6 ~=? mayorCapacidad [nave4, nave6],
+  nave8 ~=? mayorCapacidad [soloUnMotor, nave8, nave6, nave4],
   puroContenedor ~=? mayorCapacidad [soloUnMotor, puroContenedor],
-  nave6 ~=? mayorCapacidad [nave6, nave1]
+  puroContenedor ~=? mayorCapacidad [nave8, puroContenedor]
   ]
 
 testsEj4 = test [
@@ -86,12 +101,33 @@ testsEj5 = test [
   impactado1B ~=? impactar (Babor, 1, Torpedo) impactable,
   impactable ~=? impactar (Babor, 1, Grande) impactable,
   impactable ~=? impactar (Babor, 1, Pequeño) impactable,
-  (Base Contenedor) ~=? impactar (Babor, 0, Pequeño) impactable
+  (Base Contenedor) ~=? impactar (Babor, 0, Pequeño) impactable,
+  superProtegido ~=? impactar (Estribor, 1, Pequeño) superProtegido,
+  superProtegido ~=? impactar (Babor, 1, Pequeño) superProtegido,
+  superProtegido ~=? impactar (Babor, 1, Grande) superProtegido,
+  superProtegido ~=? impactar (Estribor, 1, Grande) superProtegido,
+  superPartido ~=? impactar (Babor, 1, Torpedo) superProtegido,
+  superPartido ~=? impactar (Estribor, 1, Grande) superPartido,
+  superPartido ~=? impactar (Babor, 1, Grande) superPartido,
+  superDestruido ~=? impactar (Estribor, 1, Torpedo) superPartido,
+  contenedorSolo ~=? impactar (Estribor, 0, Pequeño) superDestruido
   ]
 
 testsEj6 = test [
+  impactable ~=? maniobrar impactable [],
   impactable ~=? maniobrar impactable [(Babor, 1, Grande)],
-  (Base Contenedor) ~=? maniobrar impactable [(Babor, 1, Grande), (Babor, 0, Pequeño)]
+  impactado1B ~=? maniobrar impactable [(Babor, 1, Torpedo)],
+  impactado1B ~=? maniobrar impactable [(Babor, 1, Grande), (Babor, 1, Pequeño), (Babor, 1, Torpedo)],
+  impactado1B ~=? maniobrar impactable [(Babor, 1, Grande), (Babor, 1, Pequeño), (Babor, 1, Torpedo), (Babor, 1, Pequeño)],
+  contenedorSolo ~=? maniobrar impactable [(Babor, 1, Grande), (Babor, 0, Pequeño)],
+  contenedorSolo ~=? maniobrar impactable [(Babor, 1, Grande), (Babor, 0, Pequeño), (Babor, 1, Pequeño)],
+  superProtegido ~=? maniobrar superProtegido [(Estribor, 1, Pequeño), (Babor, 1, Grande), (Estribor, 1, Grande), (Babor, 1, Pequeño)],
+  superPartido ~=? maniobrar superProtegido [(Estribor, 1, Pequeño), (Babor, 1, Grande), (Babor, 1, Torpedo), (Estribor, 1, Grande), (Babor, 1, Grande)],
+  superDestruido ~=? maniobrar superProtegido [(Estribor, 1, Pequeño), (Babor, 1, Grande), (Babor, 1, Torpedo), (Estribor, 1, Grande), (Estribor, 1, Torpedo)],
+  contenedorSolo ~=? maniobrar superProtegido [(Estribor, 1, Pequeño), (Babor, 1, Grande), (Babor, 1, Torpedo), (Estribor, 1, Grande), (Estribor, 1, Torpedo), (Estribor, 0, Pequeño) ],
+  contenedorSolo ~=? maniobrar superProtegido [(Estribor, 0, Torpedo)],
+  nave9semiPartida ~=? maniobrar nave9 [(Babor, 0, Grande),(Babor,2,Torpedo),(Estribor,0,Pequeño)],
+  nave9Partida ~=? maniobrar nave9 [(Estribor,0,Pequeño),(Babor,2,Torpedo),(Babor, 1, Grande)]
   ]
 
 testsEj7 = test [
@@ -114,8 +150,3 @@ testsEj8 = test [
   (4, 4) ~=? dimensiones nave6,
   (5, 4) ~=? dimensiones nave8
   ]
-
-
---Ejemplos de referencia para maniobrar:	
---maniobrar nave9 [(Babor, 0, Grande),(Babor,2,Torpedo),(Estribor,0,Pequeño)] destruye solo el subárbol izquierdo del subárbol izquierdo.
---maniobrar nave9 [(Estribor,0,Pequeño),(Babor,2,Torpedo),(Babor, 1, Grande)] destruye todo el subárbol izquierdo.
