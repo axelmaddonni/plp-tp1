@@ -31,10 +31,13 @@ foldNave fbase fmodulo nave = case nave of
 --Ejercicio 2
 
 capacidad :: NaveEspacial -> Int
-capacidad = foldNave (esComponenteX Contenedor) (\x y z -> (esComponenteX Contenedor x)+y+z)
+capacidad = foldNave (esContenedor) (\x y z -> (esContenedor x)+y+z)
 
 esComponenteX :: Componente -> Componente -> Int
 esComponenteX x y = if x == y then 1 else 0
+
+esContenedor :: Componente -> Int
+esContenedor = esComponenteX Contenedor
 
 poderDeAtaque :: NaveEspacial -> Int
 poderDeAtaque nave = cantidadComponenteX Cañón nave
@@ -60,6 +63,18 @@ puedeVolar = foldNave (==Motor) (\c rIzq rDer -> rIzq || rDer || c==Motor)
 mismoPotencial :: NaveEspacial -> NaveEspacial -> Bool
 mismoPotencial nave1 nave2 =  cantidadCañones nave1 == cantidadCañones nave2 && cantidadEscudos nave1 == cantidadEscudos nave2 && cantidadMotores nave1 == cantidadMotores nave2  && cantidadContenedores nave1 == cantidadContenedores nave2
 
+{- 
+
+Otras posibles implementaciones
+
+mismoPotencial :: NaveEspacial -> NaveEspacial -> Bool
+mismoPotencial nave1 nave2 =  (foldr (&&) True) [ f nave1 == f nave2 | f<-[cantidadCañones, cantidadEscudos, cantidadMotores, cantidadContenedores] ] 
+
+mismoPotencial :: NaveEspacial -> NaveEspacial -> Bool
+mismoPotencial nave1 nave2 =  (foldr (&&) True) [ f nave1 == f nave2 | f<-(map cantidadComponenteX [Cañón, Escudo, Motor, Contenedor]) ] 
+
+-} 
+
 --Ejercicio 3
 
 mayorCapacidad :: [NaveEspacial] -> NaveEspacial
@@ -70,7 +85,7 @@ mayorCapacidad = foldr1 (\nave res -> if capacidad nave > capacidad res then nav
 transformar :: (Componente -> Componente) -> NaveEspacial -> NaveEspacial
 transformar trans = foldNave (Base . trans) (Módulo . trans)
 
--- Ejercicio 5
+--Ejercicio 5
 impactar :: Peligro -> NaveEspacial -> NaveEspacial
 impactar (d, 0, Grande) (Módulo Escudo n1 n2) = if poderDeAtaque n1 > 0 || poderDeAtaque n2 > 0 then Módulo Escudo n1 n2 else Base Contenedor
 impactar (d, 0, Pequeño) (Base Escudo) = Base Escudo

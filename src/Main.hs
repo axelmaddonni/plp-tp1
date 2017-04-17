@@ -16,6 +16,9 @@ nave8 = Módulo Contenedor nave1 nave6
 nave9 = Módulo Escudo 
     (Módulo Escudo (Módulo Escudo (Base Escudo) (Base Cañón)) (Módulo Motor (Base Contenedor) (Base Motor))) 
     (Módulo Escudo (Módulo Contenedor (Base Motor) (Base Contenedor)) (Módulo Escudo (Base Cañón) (Base Escudo)))
+nave9transformada = Módulo Contenedor 
+    (Módulo Contenedor (Módulo Contenedor (Base Contenedor) (Base Escudo)) (Módulo Motor (Base Cañón) (Base Motor))) 
+    (Módulo Contenedor (Módulo Cañón (Base Motor) (Base Cañón)) (Módulo Contenedor (Base Escudo) (Base Contenedor)))
 
 nave9semiPartida =  Módulo Escudo 
     (Módulo Escudo (Base Contenedor) (Módulo Motor (Base Contenedor) (Base Motor))) 
@@ -46,13 +49,36 @@ desbalanceado = Módulo Escudo (Base Contenedor) protegido
 impactable = Módulo Contenedor (Módulo Escudo (Base Cañón) (Base Motor)) (Base Motor)
 impactado1B = Módulo Contenedor (Base Contenedor) (Base Motor)
 
+-- Funciones de Transformacion
+
 transformador :: Componente -> Componente
 transformador Cañón = Escudo
 transformador Motor = Motor
 transformador Escudo = Contenedor
 transformador Contenedor = Cañón 
 
+aEscudos :: Componente -> Componente
+aEscudos _ = Escudo
+
+-- Constructor de Naves
+
+constructorDeNavesEscudo :: Int -> NaveEspacial
+constructorDeNavesEscudo n = (foldr (\f y -> f y) (Base Escudo)) [agregarX Escudo | i <- [1..n]]
+
+agregarX :: Componente -> NaveEspacial -> NaveEspacial
+agregarX componente nave = Módulo componente nave nave
+
+
+-- Peligros
+
+peligroFulminanteBabor = (Babor,0,Torpedo)
+peligroFulminanteEstribor = (Babor,0,Torpedo)
+
+peligroErradoEstribor = (Estribor,100,Torpedo)
+peligroErradoBabor = (Babor,100,Torpedo)
+
 --Ejecución de los tests
+
 main :: IO Counts
 main = do runTestTT allTests
 
@@ -94,7 +120,16 @@ testsEj3 = test [
 testsEj4 = test [
   soloUnMotor ~=? transformar transformador soloUnMotor,
   tresCañones ~=? transformar transformador puroContenedor,
-  Módulo Escudo (Base Contenedor) (Base Motor) ~=? transformar transformador nave2
+  Módulo Escudo (Base Contenedor) (Base Motor) ~=? transformar transformador nave2,
+  nave9transformada ~=? transformar transformador nave9,
+
+  constructorDeNavesEscudo 0 ~=? transformar aEscudos nave1,
+  constructorDeNavesEscudo 1 ~=? transformar aEscudos nave2,
+  constructorDeNavesEscudo 1 ~=? transformar aEscudos nave3,
+  constructorDeNavesEscudo 2 ~=? transformar aEscudos nave4,
+  constructorDeNavesEscudo 2 ~=? transformar aEscudos nave5,
+  constructorDeNavesEscudo 3 ~=? transformar aEscudos nave9
+
   ]
 
 testsEj5 = test [
@@ -131,7 +166,17 @@ testsEj6 = test [
   ]
 
 testsEj7 = test [
+  [] ~=? pruebaDeFuego [peligroFulminanteEstribor] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
+  [] ~=? pruebaDeFuego [peligroFulminanteBabor] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
+
+  [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9] ~=? pruebaDeFuego [peligroErradoBabor] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
+  [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9] ~=? pruebaDeFuego [peligroErradoEstribor] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
+
+  [nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
+  [nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
+  [nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9],
   [nave1,nave3,nave9] ~=? pruebaDeFuego [(Babor,1,Grande),(Babor,2,Torpedo),(Estribor, 1, Pequeño)] [nave1,nave2,nave3,nave4,nave5,nave6,nave7,nave8,nave9]
+
   ]
 
 testsEj8 = test [
