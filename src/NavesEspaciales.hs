@@ -31,7 +31,11 @@ foldNave fbase fmodulo nave = case nave of
 --Ejercicio 2
 
 capacidad :: NaveEspacial -> Int
-capacidad = foldNave (esComponenteX Contenedor) (\x y z -> (esComponenteX Contenedor x)+y+z)
+capacidad = foldNave (esComponenteX Contenedor) (\x y z -> (esContenedor x)+y+z)
+
+--NOTA: Pese a lo que puede sugerir el nombre esComponente_, el resultado de estas funciones es un Int que puede ser 1 o 0, y no un booleano
+esContenedor :: Componente -> Int
+esContenedor = esComponenteX Contenedor
 
 esComponenteX :: Componente -> Componente -> Int
 esComponenteX x y = if x == y then 1 else 0

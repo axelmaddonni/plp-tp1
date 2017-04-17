@@ -10,6 +10,7 @@ nave2 = Módulo Cañón (Base Escudo) (Base Motor)
 nave3 = Módulo Motor (Base Escudo) (Base Cañón)
 nave4 = Módulo Contenedor nave2 nave3
 nave5 = Módulo Contenedor nave3 nave2
+nave5Espejo = Módulo Contenedor nave2 nave3
 nave6 = Módulo Contenedor nave4 nave1
 nave7 = Módulo Contenedor nave1 nave5
 nave8 = Módulo Contenedor nave1 nave6
@@ -76,10 +77,14 @@ testsEj2 = test [
   0 ~=? poderDeAtaque puroContenedor,
   3 ~=? poderDeAtaque tresCañones,
   1 ~=? poderDeAtaque contenedorYCañon,
-  True ~=? mismoPotencial nave4 nave5,
   True ~=? puedeVolar soloUnMotor,
   False ~=? puedeVolar tresCañones,
-  True ~=? puedeVolar superProtegido
+  True ~=? puedeVolar superProtegido,
+  False ~=? puedeVolar desbalanceado,
+  True ~=? puedeVolar nave5,
+  True ~=? mismoPotencial nave4 nave5,
+  False ~=? mismoPotencial superProtegido superPartido,
+  True ~=? mismoPotencial nave5 nave5Espejo
   ]
 
 testsEj3 = test [
@@ -144,9 +149,11 @@ testsEj8 = test [
   2 ~=? componentesPorNivel nave4 1,
   4 ~=? componentesPorNivel nave4 2,
   0 ~=? componentesPorNivel nave4 3,
+  2 ~=? componentesPorNivel desbalanceado 2,
   (1, 1) ~=? dimensiones nave1,
   (2, 2) ~=? dimensiones nave2,
   (3, 4) ~=? dimensiones nave4,
   (4, 4) ~=? dimensiones nave6,
-  (5, 4) ~=? dimensiones nave8
+  (5, 4) ~=? dimensiones nave8,
+  (3, 2) ~=? dimensiones desbalanceado
   ]
