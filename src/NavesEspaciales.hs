@@ -41,9 +41,6 @@ esContenedor = esComponenteX Contenedor
 esComponenteX :: Componente -> Componente -> Int
 esComponenteX x y = if x == y then 1 else 0
 
-esContenedor :: Componente -> Int
-esContenedor = esComponenteX Contenedor
-
 poderDeAtaque :: NaveEspacial -> Int
 poderDeAtaque nave = cantidadComponenteX Cañón nave
 
